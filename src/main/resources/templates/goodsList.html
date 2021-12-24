@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 관리</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/goods.js"></script>
+</head>
+<body>
+    <div style="margin-top: 100px; margin-left: 400px;">
+        <div>
+            <a href="/index">재고 관리</a>
+            상품 관리
+        </div>
+        <h1>상품 관리</h1>
+        <table>
+            <thead>
+                <th>상품 ID</th>
+                <th>상품 이름</th>
+            </thead>
+            <tbody id="goodsTableBody"></tbody>
+        </table>
+        <div style="height:20px;"></div>
+        <div style="height:20px;"><button onclick="movePage(-1)">PREV</button>&nbsp&nbsp<span id="pageNumSpan">1</span>&nbsp&nbsp<button onclick="movePage(1)">NEXT</button></div>
+        <div style="height:20px;"></div>
+        <table style="border: none">
+            <tr>
+                <td style="width:300px; border: none;">
+                    상품 ID &nbsp&nbsp&nbsp: <input id="goodsid" type="text"><br>
+                    상품 이름 : <input id="goodsnm" type="text"><br><br>
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    <button onclick="saveGoods()">등록</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+}
+table {
+    border-collapse: collapse;
+}
+th, td {
+    width: 200px;
+}
+</style>
+
+<script type="text/javascript">
+    var gPn = 1;
+</script>
+
+<script type="text/javascript">
+    drawPageNum(gPn);
+    getGoodsList(gPn);
+
+    function drawPageNum(pageNum){
+        $("#pageNumSpan").html(pageNum);
+    }
+
+    function movePage(moveCount){
+        if(gPn + moveCount > 0){
+            gPn = gPn + moveCount;
+            drawPageNum(gPn);
+            getGoodsList(gPn);
+        }
+    }
+
+    function getGoodsList(pageNum) {
+		var strUrl = "/goods/list";
+        var headers = {};
+        var jData = {pn : pageNum};
+
+        sendAjaxJsonHeaderWithLoading("GET", strUrl, jData, headers, true, "application/json; charset=UTF-8", successGetGoodsList);
+	}
+
+    function saveGoods(){
+        var goodsid = $("#goodsid").val();
+        var goodsnm = $("#goodsnm").val();
+        //console.log(goodsid + " / " + goodsnm);
+        $("#goodsid").val("");
+        $("#goodsnm").val("");
+
+        var strUrl = "/goods/save";
+        var headers = {};
+        var jData = {goodsid : goodsid, goodsnm : goodsnm};
+        sendAjaxJsonHeaderWithLoading("POST", strUrl, jData, headers, true, "", successSaveGoods);
+    }
+
+	function successGetGoodsList(data){
+	    //console.log(data);
+	    var html = "";
+	    for(var i=0; i<data.length; i++){
+	        var goods = data[i];
+	        html += "<tr>";
+	        html += "   <td>"+goods.goodsID+"</td>";
+	        html += "   <td>"+goods.name+"</td>";
+	        html += "</tr>";
+	    }
+	    $("#goodsTableBody").html(html);
+	}
+
+	function successSaveGoods(data){
+	    drawPageNum(gPn);
+        getGoodsList(gPn);
+	}
+</script>
+
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>재고 관리</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/goods.js"></script>
+</head>
+<body>
+    <div style="margin-top: 100px; margin-left: 400px;">
+        <div>
+            재고 관리
+            <a href="/goods">상품 관리</a>
+        </div>
+        <h1>재고 관리</h1>
+        <table>
+            <thead>
+                <th>상품 ID</th>
+                <th>상품 이름</th>
+                <th>재고 수량</th>
+            </thead>
+            <tbody id="goodsQuantityTableBody"></tbody>
+        </table>
+        <div style="height:20px;"></div>
+        <div style="height:20px;"><button onclick="movePage(-1)">PREV</button>&nbsp&nbsp<span id="pageNumSpan">1</span>&nbsp&nbsp<button onclick="movePage(1)">NEXT</button></div>
+        <div style="height:20px;"></div>
+        <table style="border: none">
+            <tr>
+                <td style="width:300px; border: none;">
+                    상품 ID &nbsp&nbsp&nbsp: <input id="goodsid" type="text"><br>
+                    재고 수량 : <input id="goodsquantity" type="text"><br><br>
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <button onclick="addGoodsQuantity()">입고</button>&nbsp&nbsp<button onclick="deleteGoodsQuantity()">출고</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+}
+table {
+    border-collapse: collapse;
+}
+th, td {
+    width: 200px;
+}
+</style>
+
+<script type="text/javascript">
+    var gPn = 1;
+</script>
+
+<script type="text/javascript">
+    drawPageNum(gPn);
+    getGoodsQuantityList(gPn);
+
+    function drawPageNum(pageNum){
+        $("#pageNumSpan").html(pageNum);
+    }
+
+    function movePage(moveCount){
+        if(gPn + moveCount > 0){
+            gPn = gPn + moveCount;
+            drawPageNum(gPn);
+            getGoodsQuantityList(gPn);
+        }
+    }
+
+    function getGoodsQuantityList(pageNum) {
+		var strUrl = "/goods/quantity/list";
+        var headers = {};
+        var jData = {pn : pageNum};
+
+        sendAjaxJsonHeaderWithLoading("GET", strUrl, jData, headers, true, "application/json; charset=UTF-8", successGetGoodsQuantityList);
+	}
+
+	function successGetGoodsQuantityList(data){
+	    //console.log(data);
+	    var html = "";
+	    for(var i=0; i<data.length; i++){
+	        var goodsQuantity = data[i];
+	        html += "<tr>";
+	        html += "   <td>"+goodsQuantity.goodsDTO.goodsID+"</td>";
+	        html += "   <td>"+goodsQuantity.goodsDTO.name+"</td>";
+	        html += "   <td>"+goodsQuantity.goodsQuantity+"</td>";
+	        html += "</tr>";
+	    }
+	    $("#goodsQuantityTableBody").html(html);
+	}
+
+	function addGoodsQuantity(){
+        var goodsid = $("#goodsid").val();
+        var goodsquantity = $("#goodsquantity").val();
+        //console.log(goodsid + " / " + goodsquantity);
+        $("#goodsid").val("");
+        $("#goodsquantity").val("");
+
+        var strUrl = "/goods/quantity/add";
+        var headers = {};
+        var jData = {goodsid : goodsid, goodsqnt : goodsquantity};
+        sendAjaxJsonHeaderWithLoading("POST", strUrl, jData, headers, true, "", successAddGoodsQuantity);
+    }
+
+    function successAddGoodsQuantity(data){
+	    drawPageNum(gPn);
+        getGoodsQuantityList(gPn);
+	}
+
+	function deleteGoodsQuantity(){
+        var goodsid = $("#goodsid").val();
+        var goodsquantity = $("#goodsquantity").val();
+        //console.log(goodsid + " / " + goodsquantity);
+        $("#goodsid").val("");
+        $("#goodsquantity").val("");
+
+        var strUrl = "/goods/quantity/delete";
+        var headers = {};
+        var jData = {goodsid : goodsid, goodsqnt : goodsquantity};
+        sendAjaxJsonHeaderWithLoading("POST", strUrl, jData, headers, true, "", successDeleteGoodsQuantity);
+    }
+
+    function successDeleteGoodsQuantity(data){
+	    drawPageNum(gPn);
+        getGoodsQuantityList(gPn);
+	}
+</script>
+
+</html>
