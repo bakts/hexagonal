@@ -20,6 +20,7 @@ public class TemplateApplication {
 		https://dev-gorany.tistory.com/235
 		https://dev-gorany.tistory.com/325
 		master 수정
+		ft1/base 추가
 	 */
 
 	public static void main(String[] args) {
