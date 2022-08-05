@@ -19,6 +19,7 @@ public class TemplateApplication {
 		https://dev-gorany.tistory.com/224
 		https://dev-gorany.tistory.com/235
 		https://dev-gorany.tistory.com/325
+		master 수정
 	 */
 
 	public static void main(String[] args) {
